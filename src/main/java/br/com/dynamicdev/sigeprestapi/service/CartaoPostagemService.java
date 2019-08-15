@@ -13,26 +13,27 @@ import br.com.correios.bsb.sigep.master.bean.cliente.ClienteERP;
 import br.com.correios.bsb.sigep.master.bean.cliente.ContratoERP;
 import br.com.correios.bsb.sigep.master.bean.cliente.ServicoERP;
 import br.com.correios.bsb.sigep.master.bean.cliente.SigepClienteException;
+import br.com.correios.bsb.sigep.master.bean.cliente.StatusCartao;
 import br.com.dynamicdev.sigeprestapi.ListUtils;
 import br.com.dynamicdev.sigeprestapi.constantes.Credenciais;
 import br.com.dynamicdev.sigeprestapi.model.ServicoPostal;
 
 @Service
-public class ClienteService {
+public class CartaoPostagemService {
 
 	@Autowired
 	private CorreiosWebService correiosWebService;
 
-	public ClienteERP getServicosERPDisponiveis() throws SigepClienteException, AutenticacaoException {
+	public Optional<ClienteERP> getServicosERPDisponiveis() throws SigepClienteException, AutenticacaoException {
 
-		return correiosWebService.getCorreiosClienteWebService().buscaCliente(Credenciais.CONTRATO, Credenciais.CARTAO,
-				Credenciais.USUARIO, Credenciais.SENHA);
+		return Optional.ofNullable(correiosWebService.getCorreiosClienteWebService().buscaCliente(Credenciais.CONTRATO,
+				Credenciais.CARTAO, Credenciais.USUARIO, Credenciais.SENHA));
 	}
 
 	public List<ServicoPostal> getServicosPostaisDisponiveis()
 			throws SigepClienteException, AutenticacaoException {
 
-		var servicosERPOptional = getServicosERPDoClienteERP(Optional.ofNullable(getServicosERPDisponiveis()));
+		var servicosERPOptional = getServicosERPDoClienteERP(getServicosERPDisponiveis());
 
 		if (servicosERPOptional.isPresent()) {
 
@@ -40,7 +41,8 @@ public class ClienteService {
 			var servicosPostaisDisponiveis = new ArrayList<ServicoPostal>();
 
 			for (ServicoERP s : servicosERPDisponiveis) {
-				servicosPostaisDisponiveis.add(new ServicoPostal(s.getCodigo(), s.getDescricao()));
+				servicosPostaisDisponiveis
+						.add(new ServicoPostal(s.getId(), s.getCodigo().trim(), s.getDescricao().trim()));
 			}
 
 			return servicosPostaisDisponiveis;
@@ -49,9 +51,13 @@ public class ClienteService {
 		return null;
 	}
 
+	public StatusCartao GetStatusCartao() throws SigepClienteException, AutenticacaoException {
 
+		return correiosWebService.getCorreiosClienteWebService().getStatusCartaoPostagem(Credenciais.CARTAO,
+				Credenciais.USUARIO, Credenciais.SENHA);
+	}
 
-	public Optional<List<ServicoERP>> getServicosERPDoClienteERP(Optional<ClienteERP> clienteERP) {
+	private Optional<List<ServicoERP>> getServicosERPDoClienteERP(Optional<ClienteERP> clienteERP) {
 
 		if (clienteERP.isPresent()) {
 
