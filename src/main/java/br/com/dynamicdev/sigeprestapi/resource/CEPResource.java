@@ -27,7 +27,7 @@ public class CEPResource {
 		return ResponseEntity.ok(service.consultarCEP(cep));
 	}
 
-	@GetMapping("/servico/{cepOrigem}/{cepDestino}/{codigoServico}")
+	@GetMapping("/disponibilidade-servico/{cepOrigem}/{cepDestino}/{codigoServico}")
 	public ResponseEntity<String> consultarDisponibilidadeServicoFaixaCEP(@PathVariable String cepOrigem,
 			@PathVariable String cepDestino, @PathVariable String codigoServico)
 			throws SigepClienteException, AutenticacaoException {
