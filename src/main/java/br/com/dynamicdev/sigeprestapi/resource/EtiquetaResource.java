@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import javax.xml.bind.JAXBException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -51,9 +52,11 @@ public class EtiquetaResource {
 		return ResponseEntity.ok(service.bloquearEtiqueta(numeroEtiqueta, idPlp));
 	}
 
-	@PutMapping("/fechar")
-	public ResponseEntity<Long> fecharPlp(@RequestBody @Valid Correioslog correioslog) {
-		return null;
+	@PostMapping("/fechar-plp")
+	public ResponseEntity<Long> fecharPlp(@RequestBody @Valid Correioslog correioslog)
+			throws JAXBException, SigepClienteException, AutenticacaoException {
+
+		return ResponseEntity.ok(service.fecharPlp(correioslog));
 	}
 
 }

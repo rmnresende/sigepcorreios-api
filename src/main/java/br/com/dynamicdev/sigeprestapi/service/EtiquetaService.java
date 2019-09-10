@@ -1,15 +1,22 @@
 package br.com.dynamicdev.sigeprestapi.service;
 
+import java.io.File;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import br.com.correios.bsb.sigep.master.bean.cliente.Acao;
 import br.com.correios.bsb.sigep.master.bean.cliente.AutenticacaoException;
@@ -48,14 +55,22 @@ public class EtiquetaService {
 
 	public long fecharPlp(Correioslog correioslog) throws JAXBException, SigepClienteException, AutenticacaoException {
 
+		var etiquetas = correioslog.getObjetoPostal().stream().map(ObjetoPostal::getNumeroEtiqueta)
+				.collect(Collectors.toList());
+
+		var etiquetasSemCodigo = new ArrayList<String>();
+
+		for (String e : etiquetas) {
+
+			StringBuilder etiquetaSemCodVerificador = new StringBuilder(e);
+			etiquetasSemCodigo.add(etiquetaSemCodVerificador.deleteCharAt(10).toString());
+		}
+
 		var xml = converterCorriosLogParaXml(correioslog);
-		var eitquetas = correioslog.getObjetoPostal().stream().map(ObjetoPostal::getNumeroEtiqueta)
-				.collect(Collectors.joining(","));
-		
+		System.out.println(xml);
 
-		return correiosWebService.getCorreiosClienteWebService().fechaPlp(xml, 1L, Credenciais.CARTAO,
-				eitquetas, Credenciais.USUARIO, Credenciais.SENHA);
-
+		return correiosWebService.getCorreiosClienteWebService().fechaPlpVariosServicos(xml, 1L, Credenciais.CARTAO,
+				etiquetasSemCodigo, Credenciais.USUARIO, Credenciais.SENHA);
 	}
 
 	private String converterCorriosLogParaXml(Correioslog correioslog) throws JAXBException {
@@ -63,10 +78,33 @@ public class EtiquetaService {
 		var context = JAXBContext.newInstance(Correioslog.class);
 		var marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+		marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
 
 		var sw = new StringWriter();
 		marshaller.marshal(correioslog, sw);
-		return sw.toString();
+		var xml = sw.toString();
+
+		jaxbXmlFileToObject(correioslog);
+		return xml;
 	}
+	
+	private void jaxbXmlFileToObject(Correioslog correioslog) {
+
+		try {
+
+			JAXBContext jaxbContext = JAXBContext.newInstance(Correioslog.class);
+			// Setup schema validator
+			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			Schema schema = sf.newSchema(
+					new File(getClass().getClassLoader().getResource("xsd/SIGEPWEB_VALIDADOR_XML_V2.XSD").getFile()));
+
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setSchema(schema);
+			marshaller.marshal(correioslog, new DefaultHandler());
+
+		} catch (JAXBException | SAXException e) {
+			e.printStackTrace();
+		}
+    }
 
 }
