@@ -10,7 +10,6 @@ import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +61,7 @@ public class EtiquetaService {
 
 		for (String e : etiquetas) {
 
-			StringBuilder etiquetaSemCodVerificador = new StringBuilder(e);
+			var etiquetaSemCodVerificador = new StringBuilder(e);
 			etiquetasSemCodigo.add(etiquetaSemCodVerificador.deleteCharAt(10).toString());
 		}
 
@@ -71,6 +70,13 @@ public class EtiquetaService {
 
 		return correiosWebService.getCorreiosClienteWebService().fechaPlpVariosServicos(xml, 1L, Credenciais.CARTAO,
 				etiquetasSemCodigo, Credenciais.USUARIO, Credenciais.SENHA);
+	}
+
+	public String solicitarXmlPlp(long idPlpMaster)
+			throws SigepClienteException, AutenticacaoException {
+
+		return correiosWebService.getCorreiosClienteWebService()
+				.solicitaXmlPlp(idPlpMaster, Credenciais.USUARIO, Credenciais.SENHA);
 	}
 
 	private String converterCorriosLogParaXml(Correioslog correioslog) throws JAXBException {
@@ -84,21 +90,21 @@ public class EtiquetaService {
 		marshaller.marshal(correioslog, sw);
 		var xml = sw.toString();
 
-		jaxbXmlFileToObject(correioslog);
+		validarXML(correioslog);
 		return xml;
 	}
 	
-	private void jaxbXmlFileToObject(Correioslog correioslog) {
+	private void validarXML(Correioslog correioslog) {
 
 		try {
 
-			JAXBContext jaxbContext = JAXBContext.newInstance(Correioslog.class);
+			var jaxbContext = JAXBContext.newInstance(Correioslog.class);
 			// Setup schema validator
-			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = sf.newSchema(
+			var sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			var schema = sf.newSchema(
 					new File(getClass().getClassLoader().getResource("xsd/SIGEPWEB_VALIDADOR_XML_V2.XSD").getFile()));
 
-			Marshaller marshaller = jaxbContext.createMarshaller();
+			var marshaller = jaxbContext.createMarshaller();
 			marshaller.setSchema(schema);
 			marshaller.marshal(correioslog, new DefaultHandler());
 

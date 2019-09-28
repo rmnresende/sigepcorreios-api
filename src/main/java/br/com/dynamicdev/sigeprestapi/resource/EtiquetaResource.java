@@ -58,5 +58,12 @@ public class EtiquetaResource {
 
 		return ResponseEntity.ok(service.fecharPlp(correioslog));
 	}
+	
+	@GetMapping("/solicitarxml/{idPlpMaster}")
+	public ResponseEntity<String> solicitarXml(@PathVariable long idPlpMaster)
+			throws SigepClienteException, AutenticacaoException {
+
+		return ResponseEntity.ok(service.solicitarXmlPlp(idPlpMaster));
+	}
 
 }
