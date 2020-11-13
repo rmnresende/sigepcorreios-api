@@ -13,20 +13,20 @@ import br.com.correios.bsb.sigep.master.bean.cliente.ClienteERP;
 import br.com.correios.bsb.sigep.master.bean.cliente.SigepClienteException;
 import br.com.correios.bsb.sigep.master.bean.cliente.StatusCartao;
 import br.com.dynamicdev.sigeprestapi.model.ServicoPostal;
-import br.com.dynamicdev.sigeprestapi.service.CartaoPostagemService;
+import br.com.dynamicdev.sigeprestapi.service.CartaoPostagemServiceImp;
 
 @RestController
 @RequestMapping("/cartaopostagem")
 public class CartaoPostagemResource {
 
 	@Autowired
-	private CartaoPostagemService service;
+	private CartaoPostagemServiceImp service;
 
 	@GetMapping("/servicoserp")
 	public ResponseEntity<ClienteERP> consultarServicosERPDisponiveis()
 			throws SigepClienteException, AutenticacaoException {
 
-		var servicoErp = service.getServicosERPDisponiveis();
+		var servicoErp = service.consulatrServicosERPDisponiveis();
 
 		if (servicoErp.isPresent())
 			return ResponseEntity.ok(servicoErp.get());
@@ -38,13 +38,13 @@ public class CartaoPostagemResource {
 	public ResponseEntity<List<ServicoPostal>> consultarServicosPostaisDisponiveis()
 			throws SigepClienteException, AutenticacaoException {
 
-		return ResponseEntity.ok(service.getServicosPostaisDisponiveis());
+		return ResponseEntity.ok(service.consultarServicosPostaisDisponiveis());
 	}
 
 	@GetMapping("/status")
 	public ResponseEntity<StatusCartao> consultarStatus() throws SigepClienteException, AutenticacaoException {
 
-		return ResponseEntity.ok(service.GetStatusCartao());
+		return ResponseEntity.ok(service.consultarStatusCartao());
 	}
 
 }

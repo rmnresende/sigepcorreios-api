@@ -14,7 +14,7 @@
 	<artifactId>sigep-restapi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>sigep-restapi</name>
-	<description>APi rest para comunicar com o sigep</description>
+	<description>APi rest para comunicar com o sigep (web service dos correios)</description>
 
 	<properties>
 		<java.version>11</java.version>

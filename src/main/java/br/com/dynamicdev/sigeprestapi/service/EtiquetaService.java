@@ -29,26 +29,26 @@ import generated.ObjetoPostal;
 public class EtiquetaService {
 
 	@Autowired
-	private CorreiosWebService correiosWebService;
+	private CorreiosWebServiceImp correiosWebService;
 
 	public String SolicitarEtiquetas(long idServico, int qtdEtiquetas)
 			throws SigepClienteException, AutenticacaoException {
 
-			return correiosWebService.getCorreiosClienteWebService().solicitaEtiquetas("C", Credenciais.CNPJ, idServico,
+			return correiosWebService.recuperarCorreiosClienteWebService().solicitaEtiquetas("C", Credenciais.CNPJ, idServico,
 					qtdEtiquetas, Credenciais.USUARIO, Credenciais.SENHA);
 	}
 	
 	public List<Integer> GerarDigitoVerificadorEtiquetas(List<String> etiquetas)
 			throws SigepClienteException, AutenticacaoException {
 
-		return correiosWebService.getCorreiosClienteWebService().geraDigitoVerificadorEtiquetas(etiquetas,
+		return correiosWebService.recuperarCorreiosClienteWebService().geraDigitoVerificadorEtiquetas(etiquetas,
 				Credenciais.USUARIO, Credenciais.SENHA);
 	}
 
 	public String bloquearEtiqueta(String numeroEtiqueta, long idPlp)
 			throws SigepClienteException, AutenticacaoException {
 
-		return correiosWebService.getCorreiosClienteWebService().bloquearObjeto(numeroEtiqueta, idPlp,
+		return correiosWebService.recuperarCorreiosClienteWebService().bloquearObjeto(numeroEtiqueta, idPlp,
 				TipoBloqueio.FRAUDE_BLOQUEIO, Acao.DEVOLVIDO_AO_REMETENTE, Credenciais.USUARIO, Credenciais.SENHA);
 	}
 
@@ -68,14 +68,14 @@ public class EtiquetaService {
 		var xml = converterCorriosLogParaXml(correioslog);
 		System.out.println(xml);
 
-		return correiosWebService.getCorreiosClienteWebService().fechaPlpVariosServicos(xml, 1L, Credenciais.CARTAO,
+		return correiosWebService.recuperarCorreiosClienteWebService().fechaPlpVariosServicos(xml, 1L, Credenciais.CARTAO,
 				etiquetasSemCodigo, Credenciais.USUARIO, Credenciais.SENHA);
 	}
 
 	public String solicitarXmlPlp(long idPlpMaster)
 			throws SigepClienteException, AutenticacaoException {
 
-		return correiosWebService.getCorreiosClienteWebService()
+		return correiosWebService.recuperarCorreiosClienteWebService()
 				.solicitaXmlPlp(idPlpMaster, Credenciais.USUARIO, Credenciais.SENHA);
 	}
 

@@ -13,16 +13,16 @@ import br.com.dynamicdev.sigeprestapi.constantes.Credenciais;
 public class CEPService {
 
 	@Autowired
-	private CorreiosWebService correiosWebService;
+	private CorreiosWebServiceImp correiosWebService;
 
 	public EnderecoERP consultarCEP(String cep) throws SQLException_Exception, SigepClienteException {
-		return correiosWebService.getCorreiosClienteWebService().consultaCEP(cep);
+		return correiosWebService.recuperarCorreiosClienteWebService().consultaCEP(cep);
 	}
 
 	public String consultarDisponibilidadeServicoFaixaCEP(String cepOrigem, String cepDestino, String codServico)
 			throws SigepClienteException, AutenticacaoException {
 
-		return correiosWebService.getCorreiosClienteWebService().verificaDisponibilidadeServico(
+		return correiosWebService.recuperarCorreiosClienteWebService().verificaDisponibilidadeServico(
 				Credenciais.CODIGO_ADMINISTRATIVO,
 				codServico, cepOrigem, cepDestino, Credenciais.USUARIO, Credenciais.SENHA);
 	}

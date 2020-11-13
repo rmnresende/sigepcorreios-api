@@ -8,5 +8,7 @@ public class Credenciais {
 	public static final String CARTAO = "0067599079";
 	public static final String CNPJ = "34028316000103";
 	public static final int CODIGO_ADMINISTRATIVO = 17000190;
+	
+	private Credenciais() {}
 
 }
