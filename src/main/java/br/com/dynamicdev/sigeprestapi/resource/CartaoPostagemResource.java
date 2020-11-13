@@ -23,7 +23,7 @@ public class CartaoPostagemResource {
 	private CartaoPostagemService service;
 
 	@GetMapping("/servicoserp")
-	public ResponseEntity<ClienteERP> getServicosERPDisponiveis()
+	public ResponseEntity<ClienteERP> consultarServicosERPDisponiveis()
 			throws SigepClienteException, AutenticacaoException {
 
 		var servicoErp = service.getServicosERPDisponiveis();
@@ -35,14 +35,14 @@ public class CartaoPostagemResource {
 	}
 
 	@GetMapping("/servicospostais")
-	public ResponseEntity<List<ServicoPostal>> getServicosPostaisDisponiveis()
+	public ResponseEntity<List<ServicoPostal>> consultarServicosPostaisDisponiveis()
 			throws SigepClienteException, AutenticacaoException {
 
 		return ResponseEntity.ok(service.getServicosPostaisDisponiveis());
 	}
 
 	@GetMapping("/status")
-	public ResponseEntity<StatusCartao> getStatus() throws SigepClienteException, AutenticacaoException {
+	public ResponseEntity<StatusCartao> consultarStatus() throws SigepClienteException, AutenticacaoException {
 
 		return ResponseEntity.ok(service.GetStatusCartao());
 	}
